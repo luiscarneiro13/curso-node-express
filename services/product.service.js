@@ -20,14 +20,18 @@ class ProductsServices {
   }
 
   find() {
-    return this.products
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        resolve(this.products)
+      }, 5000);
+    })
   }
 
-  findOne(id) {
+  async findOne(id) {
     return this.products.find((item) => item.id === id)
   }
 
-  create(body) {
+  async create(body) {
     const product = {
       id: faker.database.mongodbObjectId(),
       ...body
@@ -36,7 +40,7 @@ class ProductsServices {
     return product
   }
 
-  update(id, changes) {
+  async update(id, changes) {
     const index = this.products.findIndex(item => item.id === id)
     if (index === -1) {
       throw new Error('Producto no encontrado')
@@ -49,7 +53,7 @@ class ProductsServices {
     return this.products[index]
   }
 
-  delete(id) {
+  async delete(id) {
     const index = this.products.findIndex(item => item.id === id)
     const borrado = this.products[index]
     if (index >= 0) {
