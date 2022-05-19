@@ -11,7 +11,7 @@ class ProductsServices {
     let limit = 100;
     for (let index = 0; index < limit; index++) {
       this.products.push({
-        id: faker.database.mongodbObjectId(),
+        id: faker.datatype.uuid(),
         name: faker.commerce.productName(),
         price: parseInt(faker.commerce.price()),
         image: faker.image.imageUrl(),
@@ -24,7 +24,7 @@ class ProductsServices {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
         resolve(this.products)
-      }, 5000);
+      }, 300);
     })
   }
 
