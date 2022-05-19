@@ -1,72 +1,57 @@
 const express = require('express')
-const { faker } = require('@faker-js/faker')
+const ProductsServices = require('../services/product.service')
+
+/** Inicio Para validación */
+const { createProductSchema, updateProductSchema, getProductSchema } = require('../schemas/product.schema')
+const validatorHandler = require('../middlewares/validator.handler')
+/** Fin Para validación */
 
 const router = express.Router()
+const service = new ProductsServices()
 
-router.get('/', (req, res) => {
-  const products = []
-  const { limit } = req.query
-  let n = 10;
-
-  if (limit) {
-    n = limit
-  }
-
-  for (let index = 0; index < n; index++) {
-    products.push({
-      name: faker.commerce.productName(),
-      price: parseInt(faker.commerce.price()),
-      image: faker.image.imageUrl()
-    })
-  }
+router.get('/', async (req, res) => {
+  const products = await service.find()
   res.json(products)
 })
+/** Ejemplo de uso de middleware para controlar errores */
+router.get('/:id',
+  validatorHandler(getProductSchema, 'params'),
+  async (req, res, next) => {
+    try {
+      const { id } = req.params
+      const product = await service.findOne(id)
+      res.json(product)
+    } catch (error) {
+      next(error)
+    }
+  })
 
-router.get('/filter', (req, res) => {
-  res.send('Endpoint Filter')
-})
+router.post('/',
+  validatorHandler(createProductSchema, 'body'),
+  async (req, res) => {
+    const body = req.body
+    const product = await service.create(body)
+    res.json(product)
+  })
 
-router.get('/:id', (req, res) => {
+router.patch('/:id',
+  validatorHandler(getProductSchema, 'params'),
+  validatorHandler(updateProductSchema, 'body'),
+  async (req, res, next) => {
+    try {
+      const { id } = req.params
+      const changes = req.body
+      const product = await service.update(id, changes)
+      res.status(200).json(product)
+    } catch (error) {
+      next(error)
+    }
+  })
+
+router.delete('/:id', async (req, res) => {
   const { id } = req.params
-
-  if (id === "999") {/* Solo para probar el estatus 404 */
-    res.status(404)
-  } else {
-    res.status(200)
-  }
-
-  res.json({
-    id,
-    name: "Producto 1",
-    price: 2000
-  })
-})
-
-router.post('/', (req, res) => {
-  const body = req.body
-  res.status(201).json({
-    message: "Creación",
-    data: body
-  })
-})
-
-router.patch('/:id', (req, res) => {
-  const { id } = req.params
-  const body = req.body
-  res.json({
-    message: "Creación",
-    id,
-    data: body,
-  })
-})
-
-router.delete('/:id', (req, res) => {
-  const { id } = req.params
-  const body = req.body
-  res.json({
-    message: "Borrado",
-    id,
-  })
+  const product = await service.delete(id)
+  res.json(product)
 })
 
 
