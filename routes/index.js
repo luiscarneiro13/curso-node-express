@@ -5,11 +5,11 @@ const ejemploRouter = require('./ejemplo.router')
 
 function routerApi(app) {
 
+  const routerInicio = express.Router()
   const routerV1 = express.Router()
   const routerV2 = express.Router()
 
-
-
+  app.use('/', ejemploRouter)
 
   app.use('/api/v1', routerV1)
 
@@ -18,7 +18,6 @@ function routerApi(app) {
 
   /* Ejemplo de varias versiones de la api */
   app.use('/api/v2', routerV2)
-  routerV2.use('/', ejemploRouter)
 }
 
 module.exports = routerApi
