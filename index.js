@@ -17,3 +17,4 @@ routerApi(app)
 app.use(logErrors)
 app.use(boomErrorHandler)
 app.use(errorHandler)/* Este middleware es el último que se ejecutará porque no tiene un next() */
+
